@@ -96,7 +96,12 @@ Returns:
 		matches: the number of matches the player has played
 '''
 def playerStandings():
-	pass
+	db = connect()
+	c = db.cursor()
+	c.execute("SELECT * FROM " + VIEW_PLAYER_STATS + ";")
+	player_standings = c.fetchall()
+	db.close()
+	return player_standings
 
 '''
 Records the outcome of a single match between two players.
@@ -129,7 +134,17 @@ Returns:
 		name2: the second player's name
 '''
 def swissPairings():
-	pass
+	player_standings = playerStandings()
+	idx_id = 0
+	idx_name = 1
 
-if __name__ == '__main__':
-	pass
+	# Assign adjacent pairs for the next match
+	pairings = []
+	i = 0
+	while (i < len(player_standings)):
+		player1_standings = player_standings[i]
+		player2_standings = player_standings[i + 1]
+		pairings.append((player1_standings[idx_id], player1_standings[idx_name],
+										 player2_standings[idx_id], player2_standings[idx_name]))
+		i += 2
+	return pairings
